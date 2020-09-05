@@ -1,0 +1,19 @@
+workflow:
+  autoTrigger: true
+  branchFilters:
+    - develop
+  containers:
+    - container:
+      addOns:
+        isDocker: true
+      kubernetes:
+        envFrom:
+          - secretRef:
+              name: docker-registry-creds
+      name: docker
+      image: docker:18.09.9
+      command: |
+        echo "$DOCKERHUBPASS" | docker login --username $DOCKERHUBUSER --password-stdin
+        docker build -f gcp.Dockerfile -t agnops/cloud-wrapper:gcp-latest .
+        docker tag agnops/cloud-wrapper:gcp-latest agnops/cloud-wrapper:gcp-$COMMITID
+        docker push agnops/cloud-wrapper:gcp-latest && docker push agnops/cloud-wrapper:gcp-$COMMITID

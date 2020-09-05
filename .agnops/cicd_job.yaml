@@ -1,0 +1,10 @@
+workflow:
+  branchFilters:
+    - master
+  containers:
+    - container:
+      name: helm-kubectl
+      image: agnops/helm-kubectl:latest
+      command: |
+        #helm upgrade --install cloud-wrapper chart/cloud-wrapper --set cloudProvider=AWS --set nodeSelector."nodegroup-type"=cicd-workloads --set image.tag=$COMMITID --namespace ci-cd-tools --wait
+        kubectl set image deployment/aws-cloud-wrapper cloud-wrapper=agnops/cloud-wrapper:aws-$COMMITID -n ci-cd-tools
